@@ -171,6 +171,22 @@
         "message": "Select a tag",
         "description": "The label for selecting a tag in the create tag modal"
     },
+    "renameWindowModalTitle": {
+        "message": "Rename window",
+        "description": "The label for the rename window modal title"
+    },
+    "renameWindowInputModalPlaceholder": {
+        "message": "Enter window name…",
+        "description": "The label for the window modal input"
+    },
+    "renameWindowInputModalErrorLength": {
+        "message": "Window name must be between $1 and $2 characters.",
+        "description": "The label for the containing unallowed characters error in input modal"
+    },
+    "renameWindowInputModalErrorChar": {
+        "message": "Window name must not contain '<' or '>' characters.",
+        "description": "The label for the containing unallowed characters error in input modal"
+    },
     "renameModalTitle": {
         "message": "Rename session",
         "description": "The label for the rename session modal title"

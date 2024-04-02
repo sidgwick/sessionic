@@ -1,6 +1,9 @@
 import browser from 'webextension-polyfill';
 
-export type EWindow = browser.Windows.Window;
+export interface EWindow extends browser.Windows.Window {
+  title: string;
+}
+
 export type ETab = browser.Tabs.Tab;
 export type QueryInfo = browser.Tabs.QueryQueryInfoType;
 export type compressOptions = {

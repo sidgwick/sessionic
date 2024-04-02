@@ -3,7 +3,7 @@
   import {
     VirtualList,
     Windows,
-    InputModal,
+    RenameSession,
     ActionModal,
     TagsModal,
     Session,
@@ -145,7 +145,7 @@
   <Windows class="flex-1" />
 </div>
 
-<InputModal
+<RenameSession
   bind:open={modalShow}
   type={modalType}
   on:inputSubmit={async (event) => {

@@ -9,6 +9,7 @@
 
   const dispatch = createEventDispatcher<{
     delete: ETab | undefined;
+    renameWindow: EWindow | undefined;
   }>();
 
   export let window: EWindow;
@@ -48,9 +49,10 @@
           });
         }}
       >
-        {i18n.getMessage(
-          window?.incognito ? 'labelPrivateWindow' : 'labelWindow'
-        )}
+        {window.title ??
+          i18n.getMessage(
+            window?.incognito ? 'labelPrivateWindow' : 'labelWindow'
+          )}
       </button>
 
       <div
@@ -70,6 +72,15 @@
         on:click={() => {
           if (current && window.id) browser.windows.remove(window.id);
           else dispatch('delete');
+        }}
+      />
+
+      <IconButton
+        icon="rename"
+        title="labelRename"
+        class="ml-0 hidden text-xl hover:text-primary-focus group-hover:block"
+        on:click={() => {
+          dispatch('renameWindow');
         }}
       />
 

@@ -1,11 +1,15 @@
 <script lang="ts">
-  import type { ETab } from '@/lib/types';
+  import type { ETab, EWindow } from '@/lib/types';
   import { afterUpdate } from 'svelte';
   import { isFirefox } from '@/lib/constants';
   import { sessions, currentSession } from '@/lib/stores';
-  import { Window } from '@/lib/components';
+  import { RenameWindow, Window } from '@/lib/components';
 
   export { className as class };
+
+  let modalShow = false;
+  let editWindowIndex = -1;
+
   let className = '';
 
   let ulEl: HTMLUListElement;
@@ -64,6 +68,10 @@
       <Window
         {window}
         {current}
+        on:renameWindow={(event) => {
+          modalShow = true;
+          editWindowIndex = windowIndex;
+        }}
         on:delete={(event) => {
           deleteTab(windowIndex, event.detail);
         }}
@@ -75,3 +83,20 @@
     Select a session or open some tabs!
   </h2>
 {/if}
+
+<RenameWindow
+  bind:open={modalShow}
+  on:inputSubmit={async (event) => {
+    if (!$session || !$session.windows) return;
+
+    const window = $session.windows[editWindowIndex];
+
+    if (!window) return;
+
+    window.title = event.detail;
+    $session.windows[editWindowIndex] = window;
+
+    await sessions.put($session);
+    modalShow = false;
+  }}
+/>
