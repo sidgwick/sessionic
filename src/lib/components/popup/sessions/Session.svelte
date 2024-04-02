@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { ESession, EWindow } from '@/lib/types';
+  import type { EDragWindow, ESession, EWindow } from '@/lib/types';
   import { createEventDispatcher } from 'svelte';
   import { settings, filterOptions, sessions } from '@/lib/stores';
   import { IconButton, Tag } from '@/lib/components';
@@ -39,9 +39,77 @@
 
     session.windows = { length: session.windows.length } as EWindow[];
   }
+
+  function removeWindow(
+    session: ESession,
+    windowIndex: number
+  ): EWindow | undefined {
+    if (!session || !session.windows) return;
+    const result = session.windows.splice(windowIndex, 1)[0];
+    return result;
+  }
+
+  async function addWindow(
+    session: ESession,
+    window: EWindow
+  ): Promise<ESession | undefined> {
+    if (!session) return;
+
+    if (!Array.isArray(session.windows)) {
+      session.windows = (await sessionsDB.loadSessionWindows(
+        session.id as UUID
+      ))!;
+    }
+
+    session.windows.splice(0, 0, window);
+    console.log('atfer push', session.windows);
+    return session;
+  }
+
+  async function drop(event: EDragWindow) {
+    const sessionId = event.dataTransfer?.getData('sessionId');
+    const wIdx = event.dataTransfer?.getData('windowIndex');
+    if (wIdx == null || sessionId == null) {
+      console.log('drop failed', event);
+      return;
+    }
+
+    // no effect for same session drag and drop
+    if (sessionId == session.id) {
+      return;
+    }
+
+    const windowIndex = parseInt(wIdx);
+    const sessionToRemove = $sessions.find((s) => s.id == sessionId);
+    let sessionToAdd = $sessions.find((s) => s.id == session.id);
+
+    if (sessionToRemove == undefined || sessionToAdd == undefined) {
+      console.log('drop failed', event, sessionToRemove, sessionToAdd);
+      return;
+    }
+
+    // delete from original session
+    const windowRemoved = removeWindow(sessionToRemove, windowIndex);
+    if (windowRemoved == undefined) {
+      return;
+    }
+
+    // insert to dragged to session
+    sessionToAdd = (await addWindow(sessionToAdd, windowRemoved)) as ESession;
+
+    await sessions.put(sessionToRemove);
+    await sessions.put(sessionToAdd);
+
+    selected.select(sessionToAdd);
+    console.log('drop done', windowIndex, sessionId);
+  }
+
+  async function dragover(event: EDragWindow) {
+    event.preventDefault();
+  }
 </script>
 
-<li>
+<li on:drop={drop} on:dragover={dragover}>
   <button
     class="session-container group {$selected?.id === session.id
       ? '!bg-primary/30'

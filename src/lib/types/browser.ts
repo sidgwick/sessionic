@@ -4,6 +4,10 @@ export interface EWindow extends browser.Windows.Window {
   title: string;
 }
 
+export type EDragWindow = DragEvent & {
+  currentTarget: EventTarget & HTMLLIElement;
+};
+
 export type ETab = browser.Tabs.Tab;
 export type QueryInfo = browser.Tabs.QueryQueryInfoType;
 export type compressOptions = {

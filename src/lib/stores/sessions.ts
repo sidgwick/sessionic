@@ -111,11 +111,10 @@ export const sessions = (() => {
           }
 
           if (
-            session.windows.some(
-              (window) =>
-                window.tabs?.some(
-                  (tab) => tab.title?.toLowerCase().includes(query)
-                )
+            session.windows.some((window) =>
+              window.tabs?.some((tab) =>
+                tab.title?.toLowerCase().includes(query)
+              )
             )
           ) {
             session.windows = { length: session.windows.length } as EWindow[];

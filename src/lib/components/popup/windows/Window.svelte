@@ -1,6 +1,6 @@
 <script lang="ts">
   import browser, { i18n } from 'webextension-polyfill';
-  import type { ETab, EWindow } from '@/lib/types';
+  import type { ETab, EWindow, EDragWindow } from '@/lib/types';
   import { createEventDispatcher } from 'svelte';
   import { fade } from 'svelte/transition';
   import { settings } from '@/lib/stores';
@@ -9,6 +9,7 @@
 
   const dispatch = createEventDispatcher<{
     delete: ETab | undefined;
+    dragstart: EDragWindow;
     renameWindow: EWindow | undefined;
   }>();
 
@@ -19,10 +20,14 @@
   let collapsed = false;
 
   $: active = window?.focused ? 'text-link' : '';
+
+  async function drag(ev: EDragWindow) {
+    dispatch('dragstart', ev);
+  }
 </script>
 
 {#if window?.tabs?.length}
-  <li class="rounded-md bg-neutral-2">
+  <li class="rounded-md bg-neutral-2" draggable="true" on:dragstart={drag}>
     <button
       class="group flex items-center gap-2 p-2 {collapsed
         ? 'rounded-md'
